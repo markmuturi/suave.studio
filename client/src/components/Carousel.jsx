@@ -1,58 +1,59 @@
-import { useRef, useState, useEffect, useCallback, use } from 'react'
+import { useRef, useState, useEffect, useCallback } from 'react'
 import api from '../api'
 
-
 export default function Carousel() {
-  const offsetRef   = useRef(0)    // current rotation in degrees (float)
-  const targetRef   = useRef(0)    // target rotation
+  const offsetRef   = useRef(0)
+  const targetRef   = useRef(0)
   const rafRef      = useRef()
   const isDragging  = useRef(false)
   const lastX       = useRef(0)
   const itemRefs    = useRef([])
-  const [hovered, setHovered] = useState(null)
+  const [hovered, setHovered]   = useState(null)
   const [projects, setProjects] = useState([])
   const [dimensions, setDimensions] = useState({
     isMobile: window.innerWidth < 768,
     width: window.innerWidth
   })
 
-  const RADIUS      = dimensions.isMobile ? 300 : 600       // px — arc depth
-  const ITEM_W      = dimensions.isMobile ? 370 : 500
-  const ITEM_H      = dimensions.width < 768 ? 500
+  const RADIUS      = dimensions.isMobile ? 180 : 600
+  const ITEM_W      = dimensions.isMobile ? 260 : 500
+  const ITEM_H      = dimensions.width < 768  ? 340
                     : dimensions.width < 1024 ? 400
                     : 600
-  const ARC_DEGREES = dimensions.isMobile ? 15 : 10        // degrees between each item
-  const LERP = dimensions.isMobile ? 0.06 : 0.08
+  const ARC_DEGREES = dimensions.isMobile ? 20 : 10
+  const LERP        = dimensions.isMobile ? 0.06 : 0.08
 
   useEffect(() => {
-  const handleResize = () => {
-    setDimensions({
-      isMobile: window.innerWidth < 768,
-      width: window.innerWidth
-    })
-  }
-  window.addEventListener('resize', handleResize)
-  return () => window.removeEventListener('resize', handleResize)
+    const handleResize = () => {
+      setDimensions({
+        isMobile: window.innerWidth < 768,
+        width: window.innerWidth
+      })
+    }
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
   }, [])
 
-  // Animation loop — lerps offset toward target, updates DOM directly
   useEffect(() => {
+    const radius      = dimensions.isMobile ? 180 : 600
+    const arcDegrees  = dimensions.isMobile ? 20 : 10
+    const lerp        = dimensions.isMobile ? 0.06 : 0.08
+
     const tick = () => {
-      offsetRef.current += (targetRef.current - offsetRef.current) * LERP
+      offsetRef.current += (targetRef.current - offsetRef.current) * lerp
 
       itemRefs.current.forEach((el, i) => {
         if (!el) return
-        const angle   = (i * ARC_DEGREES) + offsetRef.current
-        const rad     = (angle * Math.PI) / 180
-        const x       = Math.sin(rad) * RADIUS
-        const z       = Math.cos(rad) * RADIUS - RADIUS
+        const angle    = (i * arcDegrees) + offsetRef.current
+        const rad      = (angle * Math.PI) / 180
+        const x        = Math.sin(rad) * radius
+        const z        = Math.cos(rad) * radius - radius
         const absAngle = Math.abs(((angle % 360) + 360) % 360)
-        // Visibility: items facing away are hidden
-        const facing  = absAngle < 90 || absAngle > 270
+        const facing   = absAngle < 90 || absAngle > 270
         const normAngle = absAngle < 180 ? absAngle : 360 - absAngle
-        const t       = Math.min(1, normAngle / 80)
-        const opacity = facing ? Math.max(0.15, 1 - t * 0.8) : 0
-        const scale   = facing ? Math.max(0.6, 1 - t * 0.45) : 0.6
+        const t        = Math.min(1, normAngle / 80)
+        const opacity  = facing ? Math.max(0.15, 1 - t * 0.8) : 0
+        const scale    = facing ? Math.max(0.6, 1 - t * 0.45) : 0.6
 
         el.style.transform = `translateX(${x}px) translateZ(${z}px) scale(${scale})`
         el.style.opacity   = opacity
@@ -61,13 +62,11 @@ export default function Carousel() {
 
       rafRef.current = requestAnimationFrame(tick)
     }
+
     rafRef.current = requestAnimationFrame(tick)
     return () => cancelAnimationFrame(rafRef.current)
-  }, [])
+  }, [dimensions])
 
-  
-
-  // Drag handlers
   const onPointerDown = useCallback((e) => {
     isDragging.current = true
     lastX.current      = e.clientX
@@ -100,20 +99,17 @@ export default function Carousel() {
     lastX.current = e.touches[0].clientX
   }, [])
 
-  const fetchProjects = async () => {
-    try {
-      const { data } = await api.get("/api/projects");
-      console.log("API Response:", data);
-      console.log("Type:", typeof data);
-      setProjects(data);
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
   useEffect(() => {
-    fetchProjects();
-  }, []);
+    const fetchProjects = async () => {
+      try {
+        const { data } = await api.get("/api/projects")
+        setProjects(data)
+      } catch (error) {
+        console.error(error)
+      }
+    }
+    fetchProjects()
+  }, [])
 
   return (
     <div
@@ -123,7 +119,7 @@ export default function Carousel() {
         background: '#000000',
         overflow:   'hidden',
         cursor:     'grab',
-        padding: '30px',
+        padding:    '30px',
         userSelect: 'none',
         touchAction: 'none',
       }}
@@ -134,18 +130,25 @@ export default function Carousel() {
       onTouchStart={onTouchStart}
       onTouchMove={onTouchMove}
     >
-      {/* 3D scene container */}
       <div style={{
-        position:        'absolute',
-        top:             '50%',
-        left:            '50%',
-        transform:       'translate(-50%, -50%)',
-        perspective:     '1200px',
+        position:          'absolute',
+        top:               '50%',
+        left:              '50%',
+        transform:         'translate(-50%, -50%)',
+        perspective:       '1200px',
         perspectiveOrigin: '50% 50%',
-        width:           0,
-        height:          0,
+        width:             0,
+        height:            0,
       }}>
-        <div style={{ transformStyle: 'preserve-3d', position: 'relative', width: '100vw', height: window.innerWidth < 768 ? '45vh' : '60vh' }}>
+        <div
+          key={dimensions.isMobile ? 'mobile' : 'desktop'}
+          style={{
+            transformStyle: 'preserve-3d',
+            position:       'relative',
+            width:          '100vw',
+            height:         dimensions.isMobile ? '45vh' : '60vh'
+          }}
+        >
           {projects.map((project, i) => (
             <div
               key={project._id}
@@ -161,8 +164,7 @@ export default function Carousel() {
                 borderRadius: 4,
                 overflow:   'hidden',
                 willChange: 'transform, opacity',
-                // transition: 'box-shadow 0.3s',
-                boxShadow:  hovered?.id === project.id
+                boxShadow:  hovered?._id === project._id
                   ? '0 0 40px rgba(255,255,255,0.15)'
                   : '0 8px 40px rgba(0,0,0,0.6)',
               }}
@@ -178,22 +180,19 @@ export default function Carousel() {
         </div>
       </div>
 
-      {/* HUD */}
-      <div>
-        <div style={{
-          position:      'absolute',
-          bottom:        20,
-          left:          40,
-          color:         '#e8d5b0',
-          fontFamily:    'sans-serif',
-          pointerEvents: 'none',
-        }}>
-          <div style={{ fontSize: 11, color: 'white', opacity: 0.5, letterSpacing: '0.2em', textTransform: 'uppercase' }}>
-            {hovered ? hovered.subtitle : 'Drag or scroll to explore'}
-          </div>
-          <div style={{ fontSize: 20, color: 'white', fontFamily: 'cursive',fontWeight: 700, lineHeight: 1 }}>
-            {hovered?.title ?? ''}
-          </div> 
+      <div style={{
+        position:      'absolute',
+        bottom:        20,
+        left:          40,
+        color:         '#e8d5b0',
+        fontFamily:    'sans-serif',
+        pointerEvents: 'none',
+      }}>
+        <div style={{ fontSize: 11, color: 'white', opacity: 0.5, letterSpacing: '0.2em', textTransform: 'uppercase' }}>
+          {hovered ? hovered.subtitle : 'Drag or scroll to explore'}
+        </div>
+        <div style={{ fontSize: 20, color: 'white', fontFamily: 'cursive', fontWeight: 700, lineHeight: 1 }}>
+          {hovered?.title ?? ''}
         </div>
       </div>
     </div>
