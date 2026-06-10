@@ -11,7 +11,7 @@ export const createProject = async (req, res) => {
         const project = await Project.create({
             title,
             content,
-            image: req.file.path,
+            image: req.file.path.replace(/\\/g, '/'),
         });
 
         res.status(201).json(project);
@@ -53,12 +53,12 @@ export const updateProject = async (req, res) => {
             {
                 title,
                 content,
-                ...(req.file && { image: req.file.path}),
+                ...(req.file && { image: req.file.path.replace(/\\/g, '/')}),
             },
             { new: true }
         );
 
-        if (updateProject) return res.status(404).json({ message: "Project not found"});
+        if (!updateProject) return res.status(404).json({ message: "Project not found"});
         res.status(200).json(updateProject);
     } catch (error) {
         console.error("Error updating project:", error);
