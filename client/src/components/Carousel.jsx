@@ -168,7 +168,7 @@ export default function Carousel() {
               }}
             >
               <img
-                src={`http://localhost:5000/${project.image}${dimensions.isMobile ? '?w=400' : '?w=800'}`}
+                src={`${import.meta.env.VITE_API_URL}}${project.image}${dimensions.isMobile ? '?w=400' : '?w=800'}`}
                 alt={project.title}
                 draggable={false}
                 style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', pointerEvents: 'none' }}
