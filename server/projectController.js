@@ -1,17 +1,20 @@
 import Project from "./models/Project.js";
+import { uploadToCloudinary } from "./config/cloudinary.js";
 
 export const createProject = async (req, res) => {
     try {
         const { title, content } = req.body;
-        
+
         if (!req.file) {
             return res.status(400).json({ message: "Image is required" });
         }
 
+        const result = await uploadToCloudinary(req.file.buffer);
+
         const project = await Project.create({
             title,
             content,
-            image: req.file.path.replace(/\\/g, '/'),
+            image: result.secure_url,
         });
 
         res.status(201).json(project);
@@ -23,7 +26,7 @@ export const createProject = async (req, res) => {
 
 export const getProject = async (req, res) => {
     try {
-        const projects = await Project.find().sort({ createdAt: -1});
+        const projects = await Project.find().sort({ createdAt: -1 });
         res.status(200).json(projects);
     } catch (error) {
         console.error("GET PROJECTS ERROR:", error);
@@ -33,33 +36,39 @@ export const getProject = async (req, res) => {
 
 export const getProjectById = async (req, res) => {
     try {
-        const project = await Project.findById(req.params.id)
+        const project = await Project.findById(req.params.id);
         if (!project) {
-            return res.status(404).json({ error: "Project not found"});
+            return res.status(404).json({ error: "Project not found" });
         }
         res.json(project);
     } catch (error) {
         console.error("GET PROJECT BY ID ERROR:", error);
-        return res.status(500).json({ error: "OOPS! Server error while fetching project"});
+        return res.status(500).json({ error: "OOPS! Server error while fetching project" });
     }
-}
+};
 
 export const updateProject = async (req, res) => {
     try {
         const { title, content } = req.body;
+        let imageUrl;
 
-        const updateProject = await Project.findByIdAndUpdate(
+        if (req.file) {
+            const result = await uploadToCloudinary(req.file.buffer);
+            imageUrl = result.secure_url;
+        }
+
+        const updated = await Project.findByIdAndUpdate(
             req.params.id,
             {
                 title,
                 content,
-                ...(req.file && { image: req.file.path.replace(/\\/g, '/')}),
+                ...(imageUrl && { image: imageUrl }),
             },
             { new: true }
         );
 
-        if (!updateProject) return res.status(404).json({ message: "Project not found"});
-        res.status(200).json(updateProject);
+        if (!updated) return res.status(404).json({ message: "Project not found" });
+        res.status(200).json(updated);
     } catch (error) {
         console.error("Error updating project:", error);
         res.status(500).json({ message: error.message });
@@ -70,12 +79,11 @@ export const deleteProject = async (req, res) => {
     try {
         const project = await Project.findByIdAndDelete(req.params.id);
         if (!project) {
-            console.error("Project not found");
-            res.status(404).json({ message: "Specified project not found"});
+            return res.status(404).json({ message: "Specified project not found" });
         }
-        console.log("Project deleted succcessfully")
+        res.status(200).json({ message: "Project deleted successfully" });
     } catch (error) {
-        console.error(error)
-        res.status(500).json({ message: "Server Error"})
+        console.error(error);
+        res.status(500).json({ message: "Server Error" });
     }
-}
+};

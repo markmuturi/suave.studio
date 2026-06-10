@@ -1,21 +1,12 @@
 import multer from "multer";
-import path from "path";
 
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, "uploads/");
-    },
-    filename: (req, file, cb) => {
-        const uniqueName = `${Date.now()}-${file.originalname}`;
-        cb(null, uniqueName);
-    },
-});
+const storage = multer.memoryStorage();
 
 const fileFilter = (req, file, cb) => {
     const allowedTypes = /jpeg|jpg|png|webp/;
-    const isValid = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+    const isValid = allowedTypes.test(file.mimetype);
     isValid ? cb(null, true) : cb(new Error("Only image files are allowed!"));
 };
 
-const upload = multer({ storage, fileFilter});
+const upload = multer({ storage, fileFilter });
 export default upload;
