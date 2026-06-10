@@ -168,7 +168,7 @@ export default function Carousel() {
               }}
             >
               <img
-                src={`{project.image}${dimensions.isMobile ? '?w=400' : '?w=800'}`}
+                src={project.image.replace('/upload/', `/upload/w_${dimensions.isMobile ? 400 : 800}/`)}
                 alt={project.title}
                 draggable={false}
                 style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', pointerEvents: 'none' }}
