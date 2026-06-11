@@ -100,7 +100,7 @@ export default function Carousel() {
   const onTouchMove = useCallback((e) => {
     const dx = e.touches[0].clientX - lastX.current
     // Faster scroll multiplier on mobile
-    targetRef.current -= dx * 0.90
+    targetRef.current -= dx * 1.50
     lastX.current = e.touches[0].clientX
   }, [])
 
