@@ -44,7 +44,11 @@ export default function Carousel() {
 
       itemRefs.current.forEach((el, i) => {
         if (!el) return
-        const angle    = (i * arcDegrees) + offsetRef.current
+        const totalItems = itemRefs.current.filter(Boolean).length
+        const totalDegrees = totalItems * arcDegrees
+        const rawAngle = (i * arcDegrees) + offsetRef.current
+        // Normalize angle to loop within the full circle of items
+        const angle = ((rawAngle % totalDegrees) + totalDegrees) % totalDegrees
         const rad      = (angle * Math.PI) / 180
         const x        = Math.sin(rad) * radius
         const z        = Math.cos(rad) * radius - radius
@@ -95,7 +99,8 @@ export default function Carousel() {
 
   const onTouchMove = useCallback((e) => {
     const dx = e.touches[0].clientX - lastX.current
-    targetRef.current -= dx * 0.15
+    // Faster scroll multiplier on mobile
+    targetRef.current -= dx * 0.35
     lastX.current = e.touches[0].clientX
   }, [])
 
