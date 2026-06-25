@@ -192,12 +192,12 @@ export default function Carousel() {
         fontFamily:    'sans-serif',
         pointerEvents: 'none',
       }}>
-        <div style={{ fontSize: 11, color: 'white', opacity: 0.5, letterSpacing: '0.2em', textTransform: 'uppercase' }}>
+        {/* <div style={{ fontSize: 11, color: 'white', opacity: 0.5, letterSpacing: '0.2em', textTransform: 'uppercase' }}>
           {hovered ? hovered.subtitle : 'Drag or scroll to explore'}
-        </div>
-        <div style={{ fontSize: 20, color: 'white', fontFamily: 'cursive', fontWeight: 700, lineHeight: 1 }}>
+        </div> */}
+        {/* <div style={{ fontSize: 20, color: 'white', fontFamily: 'cursive', fontWeight: 700, lineHeight: 1 }}>
           {hovered?.title ?? ''}
-        </div>
+        </div> */}
       </div>
     </div>
   )
