@@ -8,7 +8,7 @@ export default function Home() {
         <>
             <div className="min-h-screen w-screen bg-black flex flex-col relative overflow-hidden">
                 {/* Strands Background Animation */}
-                {/* <div className="fixed inset-0 z-0 pointer-events-none" style={{ width: '100%', height: '100%' }}>
+                <div className="fixed inset-0 z-0 pointer-events-none" style={{ width: '100%', height: '100%' }}>
                     <Strands
                         colors={["#F97316","#7C3AED","#06B6D4"]}
                         count={8}
@@ -24,10 +24,10 @@ export default function Home() {
                         opacity={0.3}
                         scale={4.0}
                     />
-                </div> */}
+                </div>
                 
                 {/* Content Layer */}
-                <div className="relative z-10 flex flex-col flex-1 overflow-hidden">
+                <div className="relative z-10 flex flex-col flex-1">
                     <Nav />
                     <Carousel />
                 </div>
