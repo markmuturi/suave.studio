@@ -27,7 +27,7 @@ export default function Home() {
                 </div>
                 
                 {/* Content Layer */}
-                <div className="relative z-10 flex flex-col flex-1">
+                <div className="relative z-10 flex flex-col flex-1 overflow-hidden">
                     <Nav />
                     <Carousel />
                 </div>
