@@ -90,14 +90,15 @@ function SocialButton({ icon, label, subtext, href, hoverBg, hoverText, hoverBor
 
 export default function Footer() {
     return (
-        <div className="flex flex-col ml-3 gap-2 font-extralight font-serif text-sm bg-black">
-            <p className="text-gray-500">© suave.studio, 2025.</p>
-            <p className="text-gray-500">This is a design showcase for all to enjoy.</p>
-            <p className="text-gray-500">Designed and built by <a href="https://personal-portfolio-sand-mu.vercel.app/" target="_blank" className="hover:text-white hover:scale-105 hover:transition-all">Mark Muturi</a>.</p>
-            <p className="text-gray-500">I am available to hire per-project or on retainer.</p>
-
+        <div className="flex flex-col items-center gap-2 font-thin font-sans md:text-lg text-xs">
+            <div className="ml-3">
+                <p className="text-white">© suave.studio, 2025.</p>
+                <p className="text-white">This is a design showcase for all to enjoy.</p>
+                <p className="text-white">Designed and built by <a href="https://personal-portfolio-sand-mu.vercel.app/" target="_blank" className="transition-all duration-300 hover:text-red-500 hover:scale-105">Mark Muturi</a>.</p>
+                <p className="text-white">I am available to hire per-project or on retainer.</p>
+            </div>
             {/*Social Links */}
-            <div className="flex mt-4 gap-3 mb-5">
+            <div className="flex mt-4 ml-3 gap-3 mb-5">
                 {socialLinks.map((link) => (
                     <SocialButton key={link.id} {...link} />
                 ))}

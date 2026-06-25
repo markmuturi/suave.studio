@@ -119,14 +119,13 @@ export default function Carousel() {
   return (
     <div
       style={{
-        width:      '100vw',
-        height:     '100vh',
-        background: '#000000',
+        width:      '100%',
+        height:     dimensions.isMobile ? '500px' : '80vh',
         overflow:   'hidden',
         cursor:     'grab',
         padding:    '30px',
         userSelect: 'none',
-        touchAction: 'none',
+        touchAction: 'pan-y',
       }}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
@@ -187,7 +186,7 @@ export default function Carousel() {
 
       <div style={{
         position:      'absolute',
-        bottom:        20,
+        bottom:        dimensions.isMobile ? 120 : 40,
         left:          40,
         color:         '#e8d5b0',
         fontFamily:    'sans-serif',
